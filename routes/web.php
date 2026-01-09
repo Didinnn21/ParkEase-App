@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\RegistrasiController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\User\DashboardController as UserDashboard;
 use App\Http\Controllers\Petugas\DashboardController as PetugasDashboard;
+use App\Http\Controllers\Admin\UserController;
 
 // Halaman Utama
 Route::get('/', function () {
@@ -29,6 +30,11 @@ Route::post('/logout', function () {
 // Group Berdasarkan Role
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
+
+    // Rute Manajemen Pengguna
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 });
 
 Route::prefix('petugas')->name('petugas.')->group(function () {
