@@ -15,11 +15,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Akun untuk Admin
+        \App\Models\User::factory()->create([
+            'name' => 'Admin ParkEase',
+            'email' => 'admin@parkease.com',
+            'password' => bcrypt('password123'),
+            'role' => 'admin',
+        ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Akun untuk User (Pengguna Umum)
+        \App\Models\User::factory()->create([
+            'name' => 'User Biasa',
+            'email' => 'user@email.com',
+            'password' => bcrypt('password123'),
+            'role' => 'user',
         ]);
     }
 }
