@@ -15,16 +15,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Akun untuk Admin
-        \App\Models\User::factory()->create([
+        // Akun Admin
+        User::factory()->create([
             'name' => 'Admin ParkEase',
             'email' => 'admin@parkease.com',
             'password' => bcrypt('password123'),
             'role' => 'admin',
         ]);
 
-        // Akun untuk User (Pengguna Umum)
-        \App\Models\User::factory()->create([
+        // Akun User (Pengguna Umum)
+        User::factory()->create([
             'name' => 'User Biasa',
             'email' => 'user@email.com',
             'password' => bcrypt('password123'),
