@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\User; 
+namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\ParkingLocation;
@@ -10,7 +10,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Mengambil data untuk ditampilkan di dashboard user
+        // Mengambil semua lokasi parkir untuk ditampilkan ke pengguna
         $locations = ParkingLocation::all();
         return view('user.dashboard', compact('locations'));
     }
