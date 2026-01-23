@@ -22,16 +22,15 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            $user = Auth::user();
+            $role = Auth::user()->role;
 
-            // Logika Pengalihan Berdasarkan Role (Penting!)
-            switch ($user->role) {
-                case 'admin':
-                    return redirect()->route('admin.dashboard');
-                case 'petugas':
-                    return redirect()->route('petugas.dashboard');
-                default:
-                    return redirect()->route('user.dashboard');
+            if ($role === 'admin') {
+                return redirect()->intended('admin/dashboard');
+            } elseif ($role === 'petugas') {
+                return redirect()->intended('petugas/dashboard');
+            } else {
+                // User Biasa -> Masuk ke Dashboard User yang ada GPS-nya
+                return redirect()->intended('user/dashboard');
             }
         }
 

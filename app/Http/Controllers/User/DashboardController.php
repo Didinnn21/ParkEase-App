@@ -10,21 +10,27 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        // Ambil input koordinat dari URL (dikirim oleh JavaScript nanti)
-        $userLat = $request->query('lat');
-        $userLng = $request->query('lng');
+        // 1. Tangkap data lat/lng dari URL
+        $lat = $request->query('lat');
+        $lng = $request->query('lng');
 
-        if ($userLat && $userLng) {
-            // SKPL 9.6: Jika ada koordinat, gunakan rumus Haversine (scopeNearby)
-            // Urutkan dari yang terdekat
-            $locations = ParkingLocation::nearby($userLat, $userLng)->get();
-            $isSorted = true;
+        // 2. Cek apakah user sudah mengaktifkan GPS?
+        if ($lat && $lng) {
+            // Jika YA: Urutkan dari yang terdekat (pakai rumus Model tadi)
+            try {
+                $locations = ParkingLocation::nearby($lat, $lng)->get();
+                $isSorted = true; // Status: Sudah diurutkan
+            } catch (\Exception $e) {
+                $locations = ParkingLocation::latest()->get();
+                $isSorted = false;
+            }
         } else {
-            // Jika user tolak akses GPS, tampilkan semua lokasi (urutkan terbaru)
+            // Jika TIDAK: Tampilkan list biasa
             $locations = ParkingLocation::latest()->get();
-            $isSorted = false;
+            $isSorted = false; // Status: Belum diurutkan
         }
 
+        // Kirim variabel $isSorted ke View agar tombol bisa muncul/hilang
         return view('user.dashboard', compact('locations', 'isSorted'));
     }
 }
