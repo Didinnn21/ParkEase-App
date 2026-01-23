@@ -33,7 +33,7 @@
             <table class="w-full text-left">
                 <thead class="bg-slate-50 text-[11px] font-black text-slate-400 uppercase tracking-widest">
                     <tr>
-                        <th class="px-8 py-5">Nama</th>
+                        <th class="px-8 py-5">Nama Lengkap</th>
                         <th class="px-8 py-5">Email</th>
                         <th class="px-8 py-5">Role</th>
                         <th class="px-8 py-5">Aksi</th>

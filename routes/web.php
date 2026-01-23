@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\Admin\LocationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegistrasiController;
@@ -30,6 +30,7 @@ Route::post('/logout', function () {
 // Group Berdasarkan Role
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
+    Route::resource('locations', LocationController::class);
 
     // Rute Manajemen Pengguna
     Route::get('/users', [UserController::class, 'index'])->name('users.index');

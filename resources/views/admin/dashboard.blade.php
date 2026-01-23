@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - ParkEase</title>
+    {{-- Gunakan Vite jika boleh, tapi CDN ini okey untuk development pantas --}}
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        /* Transisi halus untuk sidebar */
         .sidebar-transition { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
     </style>
 </head>
@@ -25,7 +25,8 @@
         </div>
 
         <nav class="flex-1 px-4 space-y-2 mt-4">
-            <a href="#" class="flex items-center gap-3 bg-blue-600 text-white px-4 py-3.5 rounded-2xl font-bold">
+            {{-- Menu Active State --}}
+            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 bg-blue-600 text-white px-4 py-3.5 rounded-2xl font-bold shadow-lg shadow-blue-900/20">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                 Dashboard
             </a>
@@ -33,9 +34,9 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                 Kelola Lokasi
             </a>
-            <a href="#" class="flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-white px-4 py-3.5 rounded-2xl font-bold transition-all">
+            <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-white px-4 py-3.5 rounded-2xl font-bold transition-all">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                Data Petugas
+                Data Petugas & User
             </a>
         </nav>
 
@@ -82,8 +83,9 @@
                 </div>
                 <div class="flex gap-3">
                     <button class="bg-white text-slate-900 border border-slate-200 px-6 py-4 rounded-2xl font-bold text-xs shadow-sm hover:bg-slate-50 transition-all uppercase tracking-widest">Laporan</button>
-                    <button class="bg-blue-600 text-white px-6 py-4 rounded-2xl font-bold text-xs shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all uppercase tracking-widest">+ Lokasi Baru</button>
-                </div>
+        <a href="{{ route('admin.locations.index') }}" class="bg-blue-600 text-white px-6 py-4 rounded-2xl font-bold text-xs shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all uppercase tracking-widest inline-flex items-center justify-center">
+                + Lokasi Baru</a>
+                       </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
@@ -92,22 +94,30 @@
                         <svg class="w-20 h-20 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                     </div>
                     <p class="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">Total Lokasi</p>
-                    <h3 class="text-4xl font-black text-slate-900 mt-2 tracking-tighter">{{ $locations->count() }} <span class="text-sm font-bold text-slate-300">Titik</span></h3>
+                    <h3 class="text-4xl font-black text-slate-900 mt-2 tracking-tighter">{{ $total_locations }} <span class="text-sm font-bold text-slate-300">Titik</span></h3>
                 </div>
 
                 <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm relative overflow-hidden group">
                     <p class="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">Total Kapasitas</p>
-                    <h3 class="text-4xl font-black text-slate-900 mt-2 tracking-tighter">{{ $locations->sum('total_slots') }} <span class="text-sm font-bold text-slate-300">Slot</span></h3>
-                    <div class="mt-4 w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                        <div class="bg-blue-600 h-full w-[65%] rounded-full"></div>
+                    <div class="flex items-end gap-2 mt-2">
+                         <h3 class="text-4xl font-black text-slate-900 tracking-tighter">{{ $total_capacity }}</h3>
+                         <span class="text-sm font-bold text-slate-300 mb-2">Slot</span>
+                    </div>
+
+                    <div class="flex justify-between items-end mt-4 mb-1">
+                        <span class="text-[10px] font-bold text-slate-400">Terisi {{ $occupancy_rate }}%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                        {{-- Bar ini sekarang bergerak mengikut data sebenar --}}
+                        <div class="bg-blue-600 h-full rounded-full transition-all duration-1000 ease-out" style="width: {{ $occupancy_rate }}%"></div>
                     </div>
                 </div>
 
                 <div class="bg-slate-900 p-8 rounded-[2rem] text-white shadow-xl shadow-slate-200 relative md:col-span-2 lg:col-span-1">
-                    <p class="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em]">Ketersediaan Realtime</p>
+                    <p class="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em]">Slot Tersedia (Realtime)</p>
                     <div class="flex items-end gap-3 mt-2">
-                        <h3 class="text-4xl font-black tracking-tighter">{{ $locations->sum('available_slots') }}</h3>
-                        <span class="bg-green-500/20 text-green-400 text-[10px] font-black px-2 py-1 rounded-md mb-2">LIVE DATA</span>
+                        <h3 class="text-4xl font-black tracking-tighter">{{ $total_available }}</h3>
+                        <span class="bg-green-500/20 text-green-400 text-[10px] font-black px-2 py-1 rounded-md mb-2 animate-pulse">LIVE</span>
                     </div>
                     <p class="text-slate-500 text-xs mt-3 font-medium italic">Data diperbarui setiap kendaraan masuk/keluar.</p>
                 </div>
@@ -127,20 +137,24 @@
                             <tr>
                                 <th class="px-8 py-5">Lokasi Parkir</th>
                                 <th class="px-8 py-5">Alamat</th>
-                                <th class="px-8 py-5 text-center">Tingkat Okupansi</th>
+                                <th class="px-8 py-5 text-center">Okupansi</th>
                                 <th class="px-8 py-5 text-right">Status</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-50">
-                            @foreach($locations as $loc)
-                            <tr class="hover:bg-slate-50/50 transition-colors">
+                            @forelse($locations as $loc)
+                            @php
+                                $used = $loc->total_slots - $loc->available_slots;
+                                $percent = $loc->total_slots > 0 ? ($used / $loc->total_slots) * 100 : 0;
+                            @endphp
+                            <tr class="hover:bg-slate-50/50 transition-colors group">
                                 <td class="px-8 py-6 font-bold text-slate-900">{{ $loc->name }}</td>
-                                <td class="px-8 py-6 text-slate-400 text-xs font-medium">{{ Str::limit($loc->address, 25) }}</td>
+                                <td class="px-8 py-6 text-slate-400 text-xs font-medium">{{ Str::limit($loc->address, 30) }}</td>
                                 <td class="px-8 py-6">
                                     <div class="flex flex-col items-center gap-1">
-                                        <span class="text-[10px] font-black text-slate-900">{{ $loc->total_slots - $loc->available_slots }} / {{ $loc->total_slots }}</span>
+                                        <span class="text-[10px] font-black text-slate-900">{{ $used }} / {{ $loc->total_slots }}</span>
                                         <div class="w-24 bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                                            <div class="h-full bg-blue-600" style="width: {{ ($loc->total_slots - $loc->available_slots) / $loc->total_slots * 100 }}%"></div>
+                                            <div class="h-full {{ $percent > 90 ? 'bg-red-500' : 'bg-blue-600' }}" style="width: {{ $percent }}%"></div>
                                         </div>
                                     </div>
                                 </td>
@@ -150,7 +164,11 @@
                                     </span>
                                 </td>
                             </tr>
-                            @endforeach
+                            @empty
+                            <tr>
+                                <td colspan="4" class="px-8 py-12 text-center text-slate-400 text-sm font-medium">Belum ada lokasi parkir yang didaftarkan.</td>
+                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -165,10 +183,6 @@
             <a href="#" class="flex flex-col items-center gap-1 text-slate-300">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                 <span class="text-[9px] font-black uppercase">Lokasi</span>
-            </a>
-            <a href="#" class="flex flex-col items-center gap-1 text-slate-300">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                <span class="text-[9px] font-black uppercase">Petugas</span>
             </a>
             <form action="{{ route('logout') }}" method="POST" class="flex flex-col items-center">
                 @csrf

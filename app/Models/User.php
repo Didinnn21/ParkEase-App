@@ -46,4 +46,16 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // ==========================================
+    // <<< TAMBAH KOD RELASI DI BAWAH INI >>>
+    // ==========================================
+
+    /**
+     * Relasi: Seorang petugas boleh mempunyai banyak sejarah update slot.
+     */
+    public function parkingHistories()
+    {
+        return $this->hasMany(ParkingHistory::class);
+    }
 }
