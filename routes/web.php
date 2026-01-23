@@ -51,7 +51,18 @@ Route::prefix('petugas')->name('petugas.')->group(function () {
 
 // Group User
 Route::prefix('user')->name('user.')->group(function () {
-    // JANGAN pakai closure function() { return view(...) }
-    // HARUS pakai Controller array [UserDashboard::class, 'index']
     Route::get('/dashboard', [UserDashboard::class, 'index'])->name('dashboard');
+    Route::get('/history', [UserDashboard::class, 'history'])->name('history');
+    Route::get('/notifications', function() { return view('user.notifications'); })->name('notifications');
+    Route::get('/profile', function() { return view('user.profile'); })->name('profile');
+
+    // Edit Profil
+    Route::get('/profile/edit', [UserDashboard::class, 'editProfile'])->name('profile.edit');
+    Route::put('/profile/update', [UserDashboard::class, 'updateProfile'])->name('profile.update');
+
+    // Ganti Password
+    Route::get('/profile/password', [UserDashboard::class, 'editPassword'])->name('profile.password');
+    Route::put('/profile/password/update', [UserDashboard::class, 'updatePassword'])->name('profile.password.update');
+
 });
+
