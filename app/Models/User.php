@@ -22,6 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'parking_location_id',
     ];
 
     /**
@@ -57,5 +58,9 @@ class User extends Authenticatable
     public function parkingHistories()
     {
         return $this->hasMany(ParkingHistory::class);
+    }
+    public function location()
+    {
+        return $this->belongsTo(ParkingLocation::class, 'parking_location_id');
     }
 }

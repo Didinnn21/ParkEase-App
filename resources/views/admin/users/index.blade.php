@@ -1,108 +1,124 @@
-<!DOCTYPE html>
-<html lang="id">
+@extends('layouts.admin')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajemen Pengguna - ParkEase</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
-        rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-    </style>
-</head>
+@section('title', 'Kelola Pengguna')
 
-<body class="bg-slate-50 min-h-screen lg:flex">
+@section('content')
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+    <div>
+        <h2 class="text-3xl font-black text-slate-900 tracking-tight">Data Pengguna</h2>
+        <p class="text-slate-400 font-medium mt-1">Kelola akaun Petugas dan User aplikasi.</p>
+    </div>
+</div>
 
-    <main class="flex-1 lg:ml-72 p-6 lg:p-12">
-        <header class="flex justify-between items-center mb-10">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm h-fit">
+        <h3 class="font-black text-slate-900 text-lg mb-6">Tambah Pengguna Baru</h3>
+
+        <form action="{{ route('admin.users.store') }}" method="POST" class="space-y-4">
+            @csrf
             <div>
-                <h2 class="text-3xl font-black text-slate-900">Manajemen Pengguna</h2>
-                <p class="text-slate-400 font-medium">Kelola akses Petugas dan Pengguna Umum.</p>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Nama Lengkap</label>
+                <input type="text" name="name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-blue-500">
             </div>
-            <button onclick="document.getElementById('modalUser').classList.remove('hidden')"
-                class="bg-blue-600 text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all text-sm">
-                + TAMBAH PENGGUNA
-            </button>
-        </header>
 
-        <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Email</label>
+                <input type="email" name="email" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-blue-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Password</label>
+                <input type="password" name="password" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-blue-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Role (Peran)</label>
+                {{-- Tambah id="role_select" dan onchange untuk JavaScript --}}
+                <select name="role" id="role_select" onchange="toggleLocationInput()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-blue-500">
+                    <option value="user">User (Pengguna Umum)</option>
+                    <option value="petugas">Petugas Parkir</option>
+                </select>
+            </div>
+
+            {{-- Input Lokasi (Disembunyikan secara default, muncul jika Petugas dipilih) --}}
+            <div id="location_input_container" class="hidden bg-blue-50 p-4 rounded-xl border border-blue-100">
+                <label class="block text-xs font-bold text-blue-600 uppercase mb-2">Tugaskan di Lokasi Mana?</label>
+                <select name="parking_location_id" class="w-full bg-white border border-blue-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700">
+                    <option value="" disabled selected>-- Pilih Lokasi --</option>
+                    @foreach($locations as $loc)
+                        <option value="{{ $loc->id }}">{{ $loc->name }} ({{ $loc->region }})</option>
+                    @endforeach
+                </select>
+                <p class="text-[10px] text-blue-400 mt-2">*Petugas hanya boleh mengurus lokasi yang dipilih ini.</p>
+            </div>
+
+            <button type="submit" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold hover:bg-slate-800 transition-all mt-4">
+                + Tambah Pengguna
+            </button>
+        </form>
+    </div>
+
+    <div class="lg:col-span-2 bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
             <table class="w-full text-left">
-                <thead class="bg-slate-50 text-[11px] font-black text-slate-400 uppercase tracking-widest">
+                <thead class="bg-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
                     <tr>
-                        <th class="px-8 py-5">Nama Lengkap</th>
-                        <th class="px-8 py-5">Email</th>
-                        <th class="px-8 py-5">Role</th>
-                        <th class="px-8 py-5">Aksi</th>
+                        <th class="px-6 py-4">Nama & Email</th>
+                        <th class="px-6 py-4">Role</th>
+                        <th class="px-6 py-4">Lokasi Bertugas</th>
+                        <th class="px-6 py-4 text-right">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-50">
-                    @foreach($users as $user)
-                        <tr class="hover:bg-slate-50 transition-colors">
-                            <td class="px-8 py-6 font-bold text-slate-900">{{ $user->name }}</td>
-                            <td class="px-8 py-6 text-slate-500 font-medium">{{ $user->email }}</td>
-                            <td class="px-8 py-6">
-                                <span
-                                    class="px-3 py-1 rounded-lg text-[10px] font-black uppercase {{ $user->role == 'petugas' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600' }}">
-                                    {{ $user->role }}
-                                </span>
-                            </td>
-                            <td class="px-8 py-6">
-                                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST"
-                                    onsubmit="return confirm('Hapus pengguna ini?')">
-                                    @csrf @method('DELETE')
-                                    <button
-                                        class="text-red-500 hover:text-red-700 font-bold text-xs uppercase">Hapus</button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
+                    @forelse($users as $user)
+                    <tr class="hover:bg-slate-50/50 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="font-bold text-slate-900">{{ $user->name }}</div>
+                            <div class="text-xs text-slate-400">{{ $user->email }}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-lg text-[10px] font-black uppercase {{ $user->role == 'petugas' ? 'bg-purple-100 text-purple-600' : 'bg-slate-100 text-slate-500' }}">
+                                {{ $user->role }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-xs font-medium text-slate-600">
+                            @if($user->role == 'petugas' && $user->location)
+                                {{ $user->location->name }}
+                            @elseif($user->role == 'petugas')
+                                <span class="text-red-400 italic">Belum ditentukan</span>
+                            @else
+                                -
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Hapus pengguna ini?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-400 hover:text-red-600 font-bold text-xs">Hapus</button>
+                            </form>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="4" class="px-6 py-12 text-center text-slate-400 text-sm">Belum ada pengguna.</td></tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
-    </main>
-
-    <div id="modalUser"
-        class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-md rounded-[2.5rem] p-10 shadow-2xl">
-            <h3 class="text-2xl font-black text-slate-900 mb-6">Tambah Pengguna</h3>
-            <form action="{{ route('admin.users.store') }}" method="POST" class="space-y-4">
-                @csrf
-                <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nama</label>
-                    <input type="text" name="name" required
-                        class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-4 mt-1 outline-none focus:border-blue-600 text-sm font-semibold">
-                </div>
-                <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email</label>
-                    <input type="email" name="email" required
-                        class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-4 mt-1 outline-none focus:border-blue-600 text-sm font-semibold">
-                </div>
-                <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Role</label>
-                    <select name="role"
-                        class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-4 mt-1 outline-none focus:border-blue-600 text-sm font-semibold">
-                        <option value="user">Pengguna Umum</option>
-                        <option value="petugas">Petugas Lapangan</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Password</label>
-                    <input type="password" name="password" required
-                        class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-4 mt-1 outline-none focus:border-blue-600 text-sm font-semibold">
-                </div>
-                <div class="flex gap-3 pt-4">
-                    <button type="button" onclick="document.getElementById('modalUser').classList.add('hidden')"
-                        class="flex-1 bg-slate-100 text-slate-600 font-bold py-4 rounded-2xl uppercase tracking-widest text-xs">Batal</button>
-                    <button type="submit"
-                        class="flex-1 bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-100 uppercase tracking-widest text-xs">Simpan</button>
-                </div>
-            </form>
-        </div>
     </div>
-</body>
+</div>
 
-</html>
+<script>
+    // Script mudah untuk tunjuk/sembunyi dropdown lokasi
+    function toggleLocationInput() {
+        const role = document.getElementById('role_select').value;
+        const container = document.getElementById('location_input_container');
+        if (role === 'petugas') {
+            container.classList.remove('hidden');
+        } else {
+            container.classList.add('hidden');
+        }
+    }
+    // Jalankan sekali saat load (jika form kembali dari error validation)
+    document.addEventListener('DOMContentLoaded', toggleLocationInput);
+</script>
+@endsection
