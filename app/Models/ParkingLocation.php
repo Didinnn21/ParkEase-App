@@ -17,8 +17,8 @@ class ParkingLocation extends Model
         'longitude',
         'total_slots',
         'available_slots',
-        'price_per_hour', // Ditambah sesuai SKPL untuk info pengguna
-        'status',         // 'open', 'full', 'closed'
+        'price_per_hour',
+        'status',
     ];
 
     /**
