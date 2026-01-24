@@ -32,6 +32,7 @@ Route::post('/logout', function () {
 // Group Admin
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
+    Route::get('/history', [App\Http\Controllers\Admin\HistoryController::class, 'index'])->name('history.index');
 
     // 2. RUTE KELOLA LOKASI (RESOURCE)
     // Ini akan otomatis buat route index, store, update, destroy

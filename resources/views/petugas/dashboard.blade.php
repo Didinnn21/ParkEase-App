@@ -11,13 +11,13 @@
 <body class="bg-slate-900 min-h-screen text-white flex flex-col">
 
     <nav class="p-6 flex justify-between items-center border-b border-slate-800">
-        <div class="flex items-center gap-3">
+        <a href="{{ route('petugas.dashboard') }}" class="flex items-center gap-3">
             <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-xl">P</div>
             <div>
                 <h1 class="font-bold text-lg leading-none">ParkEase</h1>
                 <p class="text-xs text-slate-400">Mode Petugas</p>
             </div>
-        </div>
+        </a>
         <form action="{{ route('logout') }}" method="POST">
             @csrf
             <button class="text-red-400 text-sm font-bold hover:text-white transition-colors">Logout</button>

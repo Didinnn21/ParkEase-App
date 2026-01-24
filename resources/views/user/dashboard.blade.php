@@ -16,7 +16,7 @@
 
     <div class="bg-white px-6 pt-8 pb-4">
         <div class="flex justify-between items-center mb-6">
-            <div class="flex items-center gap-3">
+            <a href="{{ route('user.dashboard') }}" class="flex items-center gap-3">
                 <div class="w-12 h-12 bg-[#2D7CF6] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
@@ -26,7 +26,7 @@
                     <h1 class="text-2xl font-extrabold text-[#1A1A1A] leading-none">ParkEase</h1>
                     <p class="text-[11px] text-slate-400 font-bold mt-1 uppercase tracking-tight">Cari Jakarta Sans</p>
                 </div>
-            </div>
+            </a>
             <div class="flex gap-3">
                 <button class="text-slate-400"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg></button>
                 <button class="text-slate-400"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>

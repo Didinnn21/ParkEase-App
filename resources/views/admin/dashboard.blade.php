@@ -1,198 +1,157 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - ParkEase</title>
-    {{-- Gunakan Vite jika boleh, tapi CDN ini okey untuk development pantas --}}
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .sidebar-transition { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    </style>
-</head>
-<body class="bg-[#F8F9FA] min-h-screen">
+@extends('layouts.admin')
 
-    <aside class="hidden lg:flex w-72 bg-slate-900 flex-col fixed h-full z-50">
-        <div class="p-8">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-                </div>
-                <span class="text-xl font-black text-white tracking-tight">ParkEase</span>
-            </div>
+@section('title', 'Dashboard Utama')
+
+@section('content')
+{{-- Muat Chart.js dari CDN --}}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="space-y-8">
+
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+            <h2 class="text-3xl font-black text-slate-900 tracking-tight">Dashboard Overview</h2>
+            <p class="text-slate-400 font-medium">Laporan analitik dan pemantauan realtime.</p>
         </div>
-
-        <nav class="flex-1 px-4 space-y-2 mt-4">
-            {{-- Menu Active State --}}
-            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 bg-blue-600 text-white px-4 py-3.5 rounded-2xl font-bold shadow-lg shadow-blue-900/20">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                Dashboard
+        <div class="flex gap-2">
+            <button onclick="window.print()" class="bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-slate-50">
+                Cetak Laporan
+            </button>
+            <a href="{{ route('admin.locations.create') }}" class="bg-slate-900 text-white px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-slate-800 shadow-lg shadow-slate-900/20">
+                + Lokasi Baru
             </a>
-            <a href="#" class="flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-white px-4 py-3.5 rounded-2xl font-bold transition-all">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                Kelola Lokasi
-            </a>
-            <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 text-slate-400 hover:bg-slate-800 hover:text-white px-4 py-3.5 rounded-2xl font-bold transition-all">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                Data Petugas & User
-            </a>
-        </nav>
-
-        <div class="p-6">
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="w-full flex items-center justify-center gap-2 bg-red-500/10 text-red-500 py-4 rounded-2xl font-bold hover:bg-red-500 hover:text-white transition-all">
-                    Logout
-                </button>
-            </form>
         </div>
-    </aside>
-
-    <div class="flex-1 lg:ml-72 flex flex-col">
-
-        <header class="bg-white border-b border-slate-100 sticky top-0 z-40 px-6 py-4 flex justify-between items-center lg:px-12">
-            <div class="flex items-center gap-4 lg:hidden">
-                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-                </div>
-                <span class="text-lg font-black text-slate-900 tracking-tight">ParkEase</span>
-            </div>
-
-            <div class="hidden lg:block text-slate-400 text-sm font-medium italic">
-                Pusat Kendali Administrasi ParkEase
-            </div>
-
-            <div class="flex items-center gap-4">
-                <div class="text-right hidden sm:block">
-                    <p class="text-xs font-black text-slate-900 uppercase leading-none">{{ Auth::user()->name }}</p>
-                    <p class="text-[10px] text-blue-600 font-bold uppercase mt-1">Administrator</p>
-                </div>
-                <div class="w-10 h-10 bg-slate-100 rounded-full border-2 border-white shadow-sm overflow-hidden">
-                    <img src="https://ui-avatars.com/api/?name={{ Auth::user()->name }}&background=0D8ABC&color=fff" alt="Profile">
-                </div>
-            </div>
-        </header>
-
-        <main class="p-6 lg:p-12 pb-32 lg:pb-12">
-            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
-                <div>
-                    <h2 class="text-3xl font-black text-slate-900 tracking-tight">Dashboard Utama</h2>
-                    <p class="text-slate-400 font-medium mt-1">Pantau performa dan ketersediaan slot parkir hari ini.</p>
-                </div>
-                <div class="flex gap-3">
-                    <button class="bg-white text-slate-900 border border-slate-200 px-6 py-4 rounded-2xl font-bold text-xs shadow-sm hover:bg-slate-50 transition-all uppercase tracking-widest">Laporan</button>
-        <a href="{{ route('admin.locations.index') }}" class="bg-blue-600 text-white px-6 py-4 rounded-2xl font-bold text-xs shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all uppercase tracking-widest inline-flex items-center justify-center">
-                + Lokasi Baru</a>
-                       </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-                <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-                        <svg class="w-20 h-20 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                    </div>
-                    <p class="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">Total Lokasi</p>
-                    <h3 class="text-4xl font-black text-slate-900 mt-2 tracking-tighter">{{ $total_locations }} <span class="text-sm font-bold text-slate-300">Titik</span></h3>
-                </div>
-
-                <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm relative overflow-hidden group">
-                    <p class="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">Total Kapasitas</p>
-                    <div class="flex items-end gap-2 mt-2">
-                         <h3 class="text-4xl font-black text-slate-900 tracking-tighter">{{ $total_capacity }}</h3>
-                         <span class="text-sm font-bold text-slate-300 mb-2">Slot</span>
-                    </div>
-
-                    <div class="flex justify-between items-end mt-4 mb-1">
-                        <span class="text-[10px] font-bold text-slate-400">Terisi {{ $occupancy_rate }}%</span>
-                    </div>
-                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                        {{-- Bar ini sekarang bergerak mengikut data sebenar --}}
-                        <div class="bg-blue-600 h-full rounded-full transition-all duration-1000 ease-out" style="width: {{ $occupancy_rate }}%"></div>
-                    </div>
-                </div>
-
-                <div class="bg-slate-900 p-8 rounded-[2rem] text-white shadow-xl shadow-slate-200 relative md:col-span-2 lg:col-span-1">
-                    <p class="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em]">Slot Tersedia (Realtime)</p>
-                    <div class="flex items-end gap-3 mt-2">
-                        <h3 class="text-4xl font-black tracking-tighter">{{ $total_available }}</h3>
-                        <span class="bg-green-500/20 text-green-400 text-[10px] font-black px-2 py-1 rounded-md mb-2 animate-pulse">LIVE</span>
-                    </div>
-                    <p class="text-slate-500 text-xs mt-3 font-medium italic">Data diperbarui setiap kendaraan masuk/keluar.</p>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden">
-                <div class="p-8 border-b border-slate-50 flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <h4 class="font-black text-slate-900 uppercase tracking-tight text-lg">Status Kepadatan Lokasi</h4>
-                    <div class="flex items-center gap-2">
-                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sistem Aktif</span>
-                    </div>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left min-w-[600px]">
-                        <thead class="bg-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">
-                            <tr>
-                                <th class="px-8 py-5">Lokasi Parkir</th>
-                                <th class="px-8 py-5">Alamat</th>
-                                <th class="px-8 py-5 text-center">Okupansi</th>
-                                <th class="px-8 py-5 text-right">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-50">
-                            @forelse($locations as $loc)
-                            @php
-                                $used = $loc->total_slots - $loc->available_slots;
-                                $percent = $loc->total_slots > 0 ? ($used / $loc->total_slots) * 100 : 0;
-                            @endphp
-                            <tr class="hover:bg-slate-50/50 transition-colors group">
-                                <td class="px-8 py-6 font-bold text-slate-900">{{ $loc->name }}</td>
-                                <td class="px-8 py-6 text-slate-400 text-xs font-medium">{{ Str::limit($loc->address, 30) }}</td>
-                                <td class="px-8 py-6">
-                                    <div class="flex flex-col items-center gap-1">
-                                        <span class="text-[10px] font-black text-slate-900">{{ $used }} / {{ $loc->total_slots }}</span>
-                                        <div class="w-24 bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                                            <div class="h-full {{ $percent > 90 ? 'bg-red-500' : 'bg-blue-600' }}" style="width: {{ $percent }}%"></div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-6 text-right">
-                                    <span class="px-4 py-1.5 rounded-xl text-[10px] font-black uppercase {{ $loc->available_slots > 0 ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600' }}">
-                                        {{ $loc->available_slots > 0 ? 'Tersedia' : 'Penuh' }}
-                                    </span>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="4" class="px-8 py-12 text-center text-slate-400 text-sm font-medium">Belum ada lokasi parkir yang didaftarkan.</td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </main>
-
-        <nav class="lg:hidden fixed bottom-0 w-full bg-white border-t border-slate-100 px-6 py-4 flex justify-around items-center z-50">
-            <a href="#" class="flex flex-col items-center gap-1 text-blue-600">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-                <span class="text-[9px] font-black uppercase">Home</span>
-            </a>
-            <a href="#" class="flex flex-col items-center gap-1 text-slate-300">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                <span class="text-[9px] font-black uppercase">Lokasi</span>
-            </a>
-            <form action="{{ route('logout') }}" method="POST" class="flex flex-col items-center">
-                @csrf
-                <button type="submit" class="flex flex-col items-center gap-1 text-red-400">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                    <span class="text-[9px] font-black uppercase">Keluar</span>
-                </button>
-            </form>
-        </nav>
     </div>
 
-</body>
-</html>
+    @if($criticalLocations->count() > 0)
+    <div class="bg-red-50 border border-red-100 p-4 rounded-2xl flex items-start gap-4 animate-pulse">
+        <div class="bg-red-500 text-white p-2 rounded-lg">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+        </div>
+        <div>
+            <h4 class="font-bold text-red-700 text-sm">PERHATIAN: {{ $criticalLocations->count() }} Lokasi Hampir Penuh!</h4>
+            <p class="text-xs text-red-600 mt-1">Segera alihkan lalu lintas dari:
+                @foreach($criticalLocations as $loc)
+                    <span class="font-bold underline">{{ $loc->name }}</span>{{ !$loop->last ? ',' : '' }}
+                @endforeach
+            </p>
+        </div>
+    </div>
+    @endif
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden">
+            <div class="absolute right-0 top-0 p-4 opacity-5">
+                <svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+            </div>
+            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">TOTAL LOKASI</p>
+            <h3 class="text-4xl font-black text-slate-900 mt-2">{{ $totalLocations }}</h3>
+            <div class="mt-4 flex items-center gap-2 text-xs font-bold text-green-600 bg-green-50 w-fit px-2 py-1 rounded-lg">
+                <span>● Aktif Beroperasi</span>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+            <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">TINGKAT OKUPANSI</p>
+            <div class="flex items-end gap-2 mt-2">
+                <h3 class="text-4xl font-black text-slate-900">{{ round($occupancyRate) }}%</h3>
+                <span class="text-sm font-bold text-slate-400 mb-1">Terisi</span>
+            </div>
+            <div class="w-full bg-slate-100 h-2 rounded-full mt-4 overflow-hidden">
+                <div class="h-full {{ $occupancyRate > 80 ? 'bg-red-500' : 'bg-blue-600' }}" style="width: {{ $occupancyRate }}%"></div>
+            </div>
+        </div>
+
+        <div class="bg-blue-600 p-6 rounded-3xl text-white shadow-lg shadow-blue-200">
+            <p class="text-blue-200 text-[10px] font-black uppercase tracking-widest">SLOT TERSEDIA</p>
+            <h3 class="text-4xl font-black mt-2">{{ $totalAvailable }}</h3>
+            <p class="text-xs font-medium text-blue-100 mt-2">Kapasitas Total: {{ $totalCapacity }}</p>
+        </div>
+
+        <div class="bg-slate-900 p-6 rounded-3xl text-white flex flex-col justify-center items-center text-center">
+            <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mb-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            </div>
+            <a href="{{ route('admin.users.index') }}" class="text-sm font-bold hover:underline">Kelola Petugas →</a>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <div class="lg:col-span-2 bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-bold text-slate-900">Trend Kendaraan Masuk (7 Hari)</h3>
+                <span class="text-xs font-bold text-slate-400 bg-slate-50 px-3 py-1 rounded-full">Weekly Report</span>
+            </div>
+            <div class="h-64">
+                <canvas id="parkingTrendChart"></canvas>
+            </div>
+        </div>
+
+        <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm h-fit">
+            <h3 class="font-bold text-slate-900 mb-6">Aktivitas Petugas Terbaru</h3>
+            <div class="space-y-6 relative before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-100">
+                @forelse($recentActivities as $history)
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-1 w-4 h-4 rounded-full border-2 border-white {{ $history->action == 'decrement' ? 'bg-blue-500' : 'bg-orange-500' }}"></div>
+                    <p class="text-xs font-bold text-slate-900">
+                        {{ $history->user->name ?? 'Sistem' }}
+                        <span class="font-normal text-slate-500">
+                            {{ $history->action == 'decrement' ? 'memasukkan kendaraan ke' : 'mengeluarkan kendaraan dari' }}
+                        </span>
+                    </p>
+                    <p class="text-xs font-bold text-blue-600 mt-0.5">{{ $history->location->name ?? 'Lokasi Dihapus' }}</p>
+                    <span class="text-[10px] text-slate-400 font-mono mt-1 block">{{ $history->created_at->diffForHumans() }}</span>
+                </div>
+                @empty
+                <p class="text-sm text-slate-400 pl-4">Belum ada aktivitas tercatat.</p>
+                @endforelse
+            </div>
+            <div class="mt-6 pt-6 border-t border-slate-50 text-center">
+                <button class="text-xs font-bold text-slate-400 hover:text-slate-900 transition-colors">Lihat Semua Log →</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const ctx = document.getElementById('parkingTrendChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            // Data dari Controller
+            labels: {!! json_encode($chartLabels) !!},
+            datasets: [{
+                label: 'Kendaraan Masuk',
+                data: {!! json_encode($chartValues) !!},
+                borderColor: '#2563EB', // Blue-600
+                backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                borderWidth: 3,
+                tension: 0.4, // Garis lengkung
+                fill: true,
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#2563EB',
+                pointBorderWidth: 2,
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { borderDash: [2, 2], drawBorder: false }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+</script>
+@endsection
