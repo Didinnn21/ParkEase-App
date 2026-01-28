@@ -64,6 +64,15 @@ Route::prefix('user')->name('user.')->group(function () {
     // Ganti Password
     Route::get('/profile/password', [UserDashboard::class, 'editPassword'])->name('profile.password');
     Route::put('/profile/password/update', [UserDashboard::class, 'updatePassword'])->name('profile.password.update');
+    // Route Profil (Bisa diakses Admin & Petugas)
+    // ... kod-kod route lain di atas ...
+
+// TAMBAH INI DI PALING BAWAH:
+
+});
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 
 });
 

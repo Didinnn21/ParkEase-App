@@ -48,9 +48,19 @@ class User extends Authenticatable
         ];
     }
 
-    // ==========================================
-    // <<< TAMBAH KOD RELASI DI BAWAH INI >>>
-    // ==========================================
+   /**
+     * Aksesor untuk URL Foto Profil
+     * Cara panggil: $user->photo_url
+     */
+    public function getPhotoUrlAttribute()
+    {
+        if ($this->profile_photo_path) {
+            return asset('storage/' . $this->profile_photo_path);
+        }
+
+        // Jika tidak ada foto, pakai API UI Avatars (Inisial Nama)
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
+    }
 
     /**
      * Relasi: Seorang petugas boleh mempunyai banyak sejarah update slot.

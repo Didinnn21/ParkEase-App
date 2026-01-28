@@ -12,11 +12,14 @@
 
     <nav class="p-6 flex justify-between items-center border-b border-slate-800">
         <a href="{{ route('petugas.dashboard') }}" class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-xl">P</div>
-            <div>
-                <h1 class="font-bold text-lg leading-none">ParkEase</h1>
-                <p class="text-xs text-slate-400">Mode Petugas</p>
-            </div>
+            <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 group">
+    <img src="{{ Auth::user()->photo_url }}" class="w-10 h-10 rounded-xl object-cover border-2 border-slate-700 group-hover:border-blue-500 transition-colors">
+
+    <div class="text-left">
+        <h1 class="font-bold text-lg leading-none group-hover:text-blue-400 transition-colors">{{ Auth::user()->name }}</h1>
+        <p class="text-xs text-slate-400">Edit Profil ></p>
+    </div>
+</a>
         </a>
         <form action="{{ route('logout') }}" method="POST">
             @csrf
