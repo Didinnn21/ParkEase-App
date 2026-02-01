@@ -12,15 +12,21 @@
 
     <nav class="p-6 flex justify-between items-center border-b border-slate-800">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-xl">P</div>
+            <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-blue-500/20">
+                <img src="{{ asset('assets/img/Logo_ParkEasy.jpeg') }}" alt="Logo ParkEase"
+                    class="w-full h-full object-cover">
+            </div>
             <div>
-                <h1 class="font-bold text-lg leading-none">ParkEase</h1>
-                <p class="text-xs text-slate-400">Mode Petugas</p>
+                <h1 class="font-bold text-lg leading-none tracking-tight">ParkEase</h1>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Mode Petugas</p>
             </div>
         </div>
         <form action="{{ route('logout') }}" method="POST">
             @csrf
-            <button class="text-red-400 text-sm font-bold hover:text-white transition-colors">Logout</button>
+            <button
+                class="text-red-400 text-xs font-black hover:text-white transition-all bg-red-500/10 px-4 py-2 rounded-lg border border-red-500/20">
+                LOGOUT
+            </button>
         </form>
     </nav>
 

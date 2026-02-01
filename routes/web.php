@@ -46,23 +46,27 @@ Route::prefix('admin')->name('admin.')->group(function () {
 // Group Petugas
 Route::prefix('petugas')->name('petugas.')->group(function () {
     Route::get('/dashboard', [PetugasDashboard::class, 'index'])->name('dashboard');
+    Route::post('/set-location', [PetugasDashboard::class, 'setLocation'])->name('set-location');
     Route::post('/update-slot', [PetugasDashboard::class, 'updateSlot'])->name('update-slot');
 });
 
 // Group User
-Route::prefix('user')->name('user.')->group(function () {
+Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/dashboard', [UserDashboard::class, 'index'])->name('dashboard');
     Route::get('/history', [UserDashboard::class, 'history'])->name('history');
-    Route::get('/notifications', function() { return view('user.notifications'); })->name('notifications');
-    Route::get('/profile', function() { return view('user.profile'); })->name('profile');
+    Route::get('/notifications', function () {
+        return view('user.notifications');
+    })->name('notifications');
+    Route::get('/profile', function () {
+        return view('user.profile');
+    })->name('profile');
 
-    // Edit Profil
+    // Edit Profil (Pastikan nama rute sesuai dengan yang dipanggil di Controller)
     Route::get('/profile/edit', [UserDashboard::class, 'editProfile'])->name('profile.edit');
     Route::put('/profile/update', [UserDashboard::class, 'updateProfile'])->name('profile.update');
 
     // Ganti Password
     Route::get('/profile/password', [UserDashboard::class, 'editPassword'])->name('profile.password');
     Route::put('/profile/password/update', [UserDashboard::class, 'updatePassword'])->name('profile.password.update');
-
 });
 

@@ -70,7 +70,7 @@ class DashboardController extends Controller
         ]);
 
         if ($request->hasFile('avatar')) {
-            // Hapus foto lama jika ada di storage
+            // Hapus foto lama jika ada
             if ($user->avatar) {
                 Storage::delete('public/avatars/' . $user->avatar);
             }
@@ -84,7 +84,7 @@ class DashboardController extends Controller
         $user->email = $request->email;
         $user->save();
 
-        // Redirect ke halaman profil UTAMA untuk menghindari error 405 Method Not Allowed
+        // Redirect ke tampilan profil utama (GET)
         return redirect()->route('user.profile')->with('success', 'Profil berhasil diperbarui!');
     }
 
