@@ -8,45 +8,47 @@ use Illuminate\Http\Request;
 
 class LocationController extends Controller
 {
-    // 1. Menampilkan Daftar Lokasi
     public function index()
     {
+        // Menampilkan daftar lokasi
         $locations = ParkingLocation::latest()->get();
         return view('admin.locations.index', compact('locations'));
     }
 
-    // 2. Menampilkan Form Tambah Lokasi
     public function create()
     {
-        // Arahkan ke file view yang baru saja kita buat
+        // Menampilkan form tambah lokasi
         return view('admin.locations.create');
     }
 
-    // 3. Menyimpan Lokasi Baru
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
             'address' => 'required|string',
-            // Validasi kategori sesuai enum/pilihan kita
             'category' => 'required|in:mall,pasar,bandung_tengah,umum',
             'total_slots' => 'required|integer|min:1',
         ]);
 
+        // Simpan ke Database
         ParkingLocation::create([
             'name' => $request->name,
             'address' => $request->address,
-            'category' => $request->category,       // Simpan Kategori
+            'category' => $request->category,
             'total_slots' => $request->total_slots,
-            'available_slots' => $request->total_slots, // Saat baru dibuat, slot tersedia = total
+            'available_slots' => $request->total_slots,
             'status' => 'open',
-            // Field latitude/longitude bisa ditambahkan nanti jika fitur peta sudah siap
+
+            // Nilai Default (Penting agar tidak error SQL)
+            'latitude' => -6.9175, // Default koordinat Bandung
+            'longitude' => 107.6191,
+            'price_per_hour' => 3000, // Default harga
+            'region' => 'Bandung',
         ]);
 
         return redirect()->route('admin.locations.index')->with('success', 'Lokasi parkir berhasil ditambahkan!');
     }
 
-    // 4. Menghapus Lokasi
     public function destroy(ParkingLocation $location)
     {
         $location->delete();
