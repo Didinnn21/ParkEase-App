@@ -28,30 +28,19 @@
 
     <div class="bg-white px-6 pt-8 pb-4 border-b border-slate-50 sticky top-0 z-50">
         <div class="flex justify-between items-center mb-6">
-<<<<<<< HEAD
-            <a href="{{ route('user.dashboard') }}" class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-[#2D7CF6] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                    </svg>
-=======
             <div class="flex items-center gap-3">
                 <div
                     class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center overflow-hidden shadow-sm border border-slate-50">
-                    <img src="{{ asset('assets/img/Logo_ParkEasy.jpeg') }}" alt="Logo" class="w-full h-full object-cover">
->>>>>>> 2a9d9b1dcb0a36f2e0f897f34be73360cee3618d
+                    <img src="{{ asset('assets/img/Logo_ParkEasy.jpeg') }}" alt="Logo"
+                        class="w-full h-full object-cover">
                 </div>
                 <div>
                     <h1 class="text-2xl font-extrabold text-[#1A1A1A] leading-none text-blue-600">ParkEase</h1>
                     <p class="text-[11px] text-slate-400 font-bold mt-1 uppercase tracking-tight">Cari Parkir Bandung
                     </p>
                 </div>
-<<<<<<< HEAD
-            </a>
-=======
             </div>
 
->>>>>>> 2a9d9b1dcb0a36f2e0f897f34be73360cee3618d
             <div class="flex gap-3">
                 <div
                     class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center text-blue-600 font-bold text-xs border border-blue-100">
@@ -99,7 +88,8 @@
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Lokasi Bandung</p>
                         <h3 class="text-sm font-extrabold text-[#1A1A1A] leading-tight mt-0.5">{{ $loc->name }}</h3>
                         <p class="text-[10px] text-slate-400 font-medium mt-0.5 leading-snug">
-                            {{ Str::limit($loc->address, 40) }}</p>
+                            {{ Str::limit($loc->address, 40) }}
+                        </p>
                         <div class="mt-3 flex">
                             @if($loc->available_slots > 0)
                                 <span class="bg-[#D1FADF] text-[#039855] text-[10px] font-black px-3 py-1 rounded-lg uppercase">
@@ -174,7 +164,7 @@
             </div>
             <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-tighter">Profil</span>
         </a>
-        
+
         <form action="{{ route('logout') }}" method="POST" class="flex flex-col items-center gap-1.5 group">
             @csrf
             <button type="submit"

@@ -11,7 +11,8 @@ class ParkingLocation extends Model
 
     protected $fillable = [
         'name', 'address', 'region', 'latitude', 'longitude',
-        'total_slots', 'available_slots', 'price_per_hour', 'status'
+        'total_slots', 'available_slots', 'price_per_hour', 'status',
+        'category'
     ];
 
     // RUMUS HAVERSINE (Wajib untuk fitur "Terdekat")

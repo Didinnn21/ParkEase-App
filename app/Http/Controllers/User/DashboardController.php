@@ -8,33 +8,54 @@ use App\Models\ParkingHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Hash; // Penting untuk fitur ganti password
+use Illuminate\Support\Facades\Hash;
 
 class DashboardController extends Controller
 {
     /**
-     * Dashboard: Menampilkan daftar lokasi parkir.
+     * Dashboard: Menampilkan daftar lokasi parkir dengan Filter Kategori.
      */
     public function index(Request $request)
     {
         $lat = $request->query('lat');
         $lng = $request->query('lng');
+        $category = $request->query('category'); // Ambil parameter kategori
+        $isSorted = false;
 
-        if ($lat && $lng) {
-            try {
-                // Scope nearby harus didefinisikan di model ParkingLocation
-                $locations = ParkingLocation::nearby($lat, $lng)->get();
-                $isSorted = true;
-            } catch (\Exception $e) {
-                $locations = ParkingLocation::latest()->get();
-                $isSorted = false;
+        // 1. Mulai Query Dasar (Hanya lokasi yang BUKA)
+        $query = ParkingLocation::where('status', 'open');
+
+        // 2. Logika Filter Kategori
+        if ($category && $category !== 'semua') {
+            if ($category === 'bandung_tengah') {
+                // Filter khusus Bandung Tengah (Berdasarkan alamat atau kategori)
+                $query->where(function ($q) {
+                    $q->where('address', 'LIKE', '%Alun-Alun%')
+                        ->orWhere('address', 'LIKE', '%Asia Afrika%')
+                        ->orWhere('address', 'LIKE', '%Braga%')
+                        ->orWhere('category', 'bandung_tengah');
+                });
+            } else {
+                // Filter umum (Mall, Pasar, dll)
+                $query->where('category', $category);
             }
-        } else {
-            $locations = ParkingLocation::latest()->get();
-            $isSorted = false;
         }
 
-        return view('user.dashboard', compact('locations', 'isSorted'));
+        // 3. Logika Sorting (Terdekat vs Terbaru)
+        if ($lat && $lng && method_exists(ParkingLocation::class, 'scopeNearby')) {
+            // Jika ada koordinat, urutkan berdasarkan jarak
+            $query->nearby($lat, $lng);
+            $isSorted = true;
+        } else {
+            // Default: urutkan terbaru
+            $query->latest();
+        }
+
+        $locations = $query->get();
+        $user = Auth::user();
+
+        // Kirim variabel $category ke view untuk styling tombol aktif
+        return view('user.dashboard', compact('locations', 'isSorted', 'user', 'category'));
     }
 
     /**
@@ -44,14 +65,14 @@ class DashboardController extends Controller
     {
         $histories = ParkingHistory::with('location')
             ->where('user_id', Auth::id())
-            ->orderBy('created_at', 'desc')
+            ->latest()
             ->get();
 
         return view('user.history', compact('histories'));
     }
 
     /**
-     * Fitur Edit Profil & Upload Foto
+     * Halaman Edit Profil
      */
     public function editProfile()
     {
@@ -59,6 +80,9 @@ class DashboardController extends Controller
         return view('user.edit-profile', compact('user'));
     }
 
+    /**
+     * Proses Update Profil & Foto
+     */
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
@@ -70,13 +94,13 @@ class DashboardController extends Controller
         ]);
 
         if ($request->hasFile('avatar')) {
-            // Hapus foto lama jika ada di storage
-            if ($user->avatar) {
-                Storage::delete('public/avatars/' . $user->avatar);
+            if ($user->avatar && Storage::disk('public')->exists('avatars/' . $user->avatar)) {
+                Storage::disk('public')->delete('avatars/' . $user->avatar);
             }
 
-            $fileName = time() . '.' . $request->avatar->extension();
-            $request->avatar->storeAs('public/avatars', $fileName);
+            $file = $request->file('avatar');
+            $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('avatars', $fileName, 'public');
             $user->avatar = $fileName;
         }
 
@@ -84,18 +108,20 @@ class DashboardController extends Controller
         $user->email = $request->email;
         $user->save();
 
-        // Redirect ke halaman profil UTAMA untuk menghindari error 405 Method Not Allowed
         return redirect()->route('user.profile')->with('success', 'Profil berhasil diperbarui!');
     }
 
     /**
-     * Fitur Ganti Password
+     * Halaman Ganti Password
      */
     public function editPassword()
     {
         return view('user.change-password');
     }
 
+    /**
+     * Proses Ganti Password
+     */
     public function updatePassword(Request $request)
     {
         $request->validate([
@@ -105,15 +131,14 @@ class DashboardController extends Controller
 
         $user = Auth::user();
 
-        // Validasi password lama
         if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'Password lama salah!']);
+            return back()->withErrors(['current_password' => 'Password lama yang Anda masukkan salah.']);
         }
 
         $user->update([
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect()->route('user.profile')->with('success', 'Password berhasil diubah!');
+        return redirect()->route('user.profile')->with('success', 'Password berhasil diubah. Silakan login ulang jika diperlukan.');
     }
 }

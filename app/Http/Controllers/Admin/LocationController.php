@@ -15,13 +15,11 @@ class LocationController extends Controller
         return view('admin.locations.index', compact('locations'));
     }
 
-    // 2. Menampilkan Form Tambah Lokasi (INI YANG HILANG SEBELUMNYA)
+    // 2. Menampilkan Form Tambah Lokasi
     public function create()
     {
-        // Kita gunakan view index saja karena form sudah ada di sana (modal/inline)
-        // Atau jika Anda ingin halaman terpisah, return view('admin.locations.create');
-        // Untuk efisiensi tutorial ini, kita redirect ke index saja
-        return redirect()->route('admin.locations.index');
+        // Arahkan ke file view yang baru saja kita buat
+        return view('admin.locations.create');
     }
 
     // 3. Menyimpan Lokasi Baru
@@ -30,26 +28,22 @@ class LocationController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'address' => 'required|string',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
+            // Validasi kategori sesuai enum/pilihan kita
+            'category' => 'required|in:mall,pasar,bandung_tengah,umum',
             'total_slots' => 'required|integer|min:1',
-            'price_per_hour' => 'required|integer', // Pastikan kolom ini ada di DB
-            'region' => 'required|string'
         ]);
 
         ParkingLocation::create([
             'name' => $request->name,
             'address' => $request->address,
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
+            'category' => $request->category,       // Simpan Kategori
             'total_slots' => $request->total_slots,
-            'available_slots' => $request->total_slots, // Awalnya penuh = kapasitas total
-            'price_per_hour' => $request->price_per_hour,
-            'region' => $request->region,
+            'available_slots' => $request->total_slots, // Saat baru dibuat, slot tersedia = total
             'status' => 'open',
+            // Field latitude/longitude bisa ditambahkan nanti jika fitur peta sudah siap
         ]);
 
-        return redirect()->route('admin.locations.index')->with('success', 'Lokasi parkir berhasil ditambahkan.');
+        return redirect()->route('admin.locations.index')->with('success', 'Lokasi parkir berhasil ditambahkan!');
     }
 
     // 4. Menghapus Lokasi
