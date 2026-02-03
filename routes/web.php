@@ -37,9 +37,10 @@ Route::post('/logout', function () {
 
 
 // --- GROUP ADMIN (Wajib Login) ---
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
     Route::get('/history', [App\Http\Controllers\Admin\HistoryController::class, 'index'])->name('history.index');
+
 
     // Kelola Lokasi
     Route::resource('locations', LocationController::class);

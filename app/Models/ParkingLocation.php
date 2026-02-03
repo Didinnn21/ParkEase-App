@@ -9,19 +9,41 @@ class ParkingLocation extends Model
 {
     use HasFactory;
 
-    // Pastikan SEMUA kolom ini ada
+    /**
+     * Daftar kolom yang boleh diisi secara massal (Mass Assignment).
+     * Pastikan semua field yang ada di Controller ada di sini.
+     */
     protected $fillable = [
         'name',
         'address',
-        'category',      // <--- WAJIB ADA
+        'category',
         'total_slots',
         'available_slots',
         'status',
         'latitude',
-        'longitude',     
+        'longitude',
         'price_per_hour',
-        'region'
+        'region',
     ];
 
-
+    /**
+     * Scope untuk mencari lokasi terdekat menggunakan Rumus Haversine.
+     * Digunakan pada User Dashboard saat filter "Terdekat" aktif.
+     * * @param $query
+     * @param $lat Latitude Pengguna
+     * @param $long Longitude Pengguna
+     * @param $radius Radius pencarian dalam KM (Default 10km)
+     */
+    public function scopeNearby($query, $lat, $long, $radius = 10)
+    {
+        return $query->select('*')
+            ->selectRaw(
+                '( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) )
+                * cos( radians( longitude ) - radians(?) ) + sin( radians(?) )
+                * sin( radians( latitude ) ) ) ) AS distance',
+                [$lat, $long, $lat]
+            )
+            ->having('distance', '<', $radius)
+            ->orderBy('distance');
+    }
 }

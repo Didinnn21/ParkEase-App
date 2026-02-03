@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'role',
         'parking_location_id',
+        'avatar', // <--- WAJIB DITAMBAHKAN (Agar foto profil bisa disimpan)
     ];
 
     /**
@@ -48,17 +49,19 @@ class User extends Authenticatable
         ];
     }
 
-   /**
-     * Aksesor untuk URL Foto Profil
-     * Cara panggil: $user->photo_url
+    /**
+     * Aksesor untuk URL Foto Profil (Otomatis)
+     * Cara panggil di Blade: {{ Auth::user()->photo_url }}
      */
     public function getPhotoUrlAttribute()
     {
-        if ($this->profile_photo_path) {
-            return asset('storage/' . $this->profile_photo_path);
+        // 1. Cek apakah user punya foto di database (kolom 'avatar')
+        if ($this->avatar) {
+            // Pastikan path-nya mengarah ke folder storage/avatars
+            return asset('storage/avatars/' . $this->avatar);
         }
 
-        // Jika tidak ada foto, pakai API UI Avatars (Inisial Nama)
+        // 2. Jika tidak ada foto, pakai layanan UI Avatars (Inisial Nama)
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
     }
 
@@ -69,6 +72,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(ParkingHistory::class);
     }
+
+    /**
+     * Relasi: Petugas ditugaskan di satu lokasi parkir.
+     */
     public function location()
     {
         return $this->belongsTo(ParkingLocation::class, 'parking_location_id');

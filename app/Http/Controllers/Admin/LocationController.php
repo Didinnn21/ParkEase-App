@@ -16,49 +16,47 @@ class LocationController extends Controller
 
     public function create()
     {
-        // Pastikan Anda sudah membuat file view create.blade.php
         return view('admin.locations.create');
     }
 
     public function store(Request $request)
     {
-        // 1. Validasi
+        // 1. Validasi harus sesuai dengan name="" yang ada di input HTML form Anda
         $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'required|string',
-            // Pastikan input select di form menggunakan value ini
-            'category' => 'required|in:mall,pasar,bandung_tengah,umum',
-            'total_slots' => 'required|integer|min:1',
+            'name'           => 'required|string|max:255',
+            'address'        => 'required|string',
+            'latitude'       => 'required',
+            'longitude'      => 'required',
+            'region'         => 'required|string',
+            'total_slots'    => 'required|integer|min:1',
+            'price_per_hour' => 'required|integer|min:0',
         ]);
 
         try {
-            // 2. Simpan
+            // 2. Gunakan mass assignment
             ParkingLocation::create([
-                'name' => $request->name,
-                'address' => $request->address,
-                'category' => $request->category, // Simpan Kategori
-                'total_slots' => $request->total_slots,
-                'available_slots' => $request->total_slots,
-                'status' => 'open',
-
-                // Data Default (Wajib ada agar database tidak menolak)
-                'latitude' => -6.9175,
-                'longitude' => 107.6191,
-                'price_per_hour' => 3000,
-                'region' => 'Bandung',
+                'name'            => $request->name,
+                'address'         => $request->address,
+                'latitude'        => $request->latitude,
+                'longitude'       => $request->longitude,
+                'region'          => $request->region,
+                'total_slots'     => $request->total_slots,
+                'available_slots' => $request->total_slots, // Awalnya sama dengan total
+                'price_per_hour'  => $request->price_per_hour,
+                'category'        => 'umum', // Kita set default karena di form tidak ada pilihan kategori
+                'status'          => 'open',
             ]);
 
-            return redirect()->route('admin.locations.index')
-                ->with('success', 'Lokasi berhasil ditambahkan.');
+            return back()->with('success', 'Lokasi parkir berhasil ditambahkan!');
         } catch (\Exception $e) {
-            // Jika error, kembalikan ke form dengan pesan
-            return back()->withInput()->with('error', 'Gagal menyimpan: ' . $e->getMessage());
+            // Tampilkan pesan error jika database menolak (misal: kolom kurang)
+            return back()->withInput()->with('error', 'Gagal: ' . $e->getMessage());
         }
     }
-
     public function destroy(ParkingLocation $location)
     {
         $location->delete();
-        return redirect()->route('admin.locations.index')->with('success', 'Lokasi dihapus.');
+        return redirect()->route('admin.locations.index')
+            ->with('success', 'Lokasi berhasil dihapus.');
     }
 }

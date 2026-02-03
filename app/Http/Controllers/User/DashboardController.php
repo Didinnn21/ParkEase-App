@@ -141,4 +141,9 @@ class DashboardController extends Controller
 
         return redirect()->route('user.profile')->with('success', 'Password berhasil diubah. Silakan login ulang jika diperlukan.');
     }
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('user.profile', compact('user')); // Pastikan nama file view sesuai
+    }
 }
