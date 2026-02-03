@@ -9,23 +9,19 @@ class ParkingLocation extends Model
 {
     use HasFactory;
 
+    // Pastikan SEMUA kolom ini ada
     protected $fillable = [
-        'name', 'address', 'region', 'latitude', 'longitude',
-        'total_slots', 'available_slots', 'price_per_hour', 'status',
-        'category'
+        'name',
+        'address',
+        'category',      // <--- WAJIB ADA
+        'total_slots',
+        'available_slots',
+        'status',
+        'latitude',
+        'longitude',     
+        'price_per_hour',
+        'region'
     ];
 
-    // RUMUS HAVERSINE (Wajib untuk fitur "Terdekat")
-    public function scopeNearby($query, $lat, $long, $radius = 10)
-    {
-        return $query->select('*')
-            ->selectRaw(
-                '( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) )
-                * cos( radians( longitude ) - radians(?) ) + sin( radians(?) )
-                * sin( radians( latitude ) ) ) ) AS distance',
-                [$lat, $long, $lat]
-            )
-            ->having('distance', '<', $radius)
-            ->orderBy('distance');
-    }
+
 }

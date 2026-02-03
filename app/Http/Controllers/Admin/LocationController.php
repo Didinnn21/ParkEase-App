@@ -10,48 +10,55 @@ class LocationController extends Controller
 {
     public function index()
     {
-        // Menampilkan daftar lokasi
         $locations = ParkingLocation::latest()->get();
         return view('admin.locations.index', compact('locations'));
     }
 
     public function create()
     {
-        // Menampilkan form tambah lokasi
+        // Pastikan Anda sudah membuat file view create.blade.php
         return view('admin.locations.create');
     }
 
     public function store(Request $request)
     {
+        // 1. Validasi
         $request->validate([
             'name' => 'required|string|max:255',
             'address' => 'required|string',
+            // Pastikan input select di form menggunakan value ini
             'category' => 'required|in:mall,pasar,bandung_tengah,umum',
             'total_slots' => 'required|integer|min:1',
         ]);
 
-        // Simpan ke Database
-        ParkingLocation::create([
-            'name' => $request->name,
-            'address' => $request->address,
-            'category' => $request->category,
-            'total_slots' => $request->total_slots,
-            'available_slots' => $request->total_slots,
-            'status' => 'open',
+        try {
+            // 2. Simpan
+            ParkingLocation::create([
+                'name' => $request->name,
+                'address' => $request->address,
+                'category' => $request->category, // Simpan Kategori
+                'total_slots' => $request->total_slots,
+                'available_slots' => $request->total_slots,
+                'status' => 'open',
 
-            // Nilai Default (Penting agar tidak error SQL)
-            'latitude' => -6.9175, // Default koordinat Bandung
-            'longitude' => 107.6191,
-            'price_per_hour' => 3000, // Default harga
-            'region' => 'Bandung',
-        ]);
+                // Data Default (Wajib ada agar database tidak menolak)
+                'latitude' => -6.9175,
+                'longitude' => 107.6191,
+                'price_per_hour' => 3000,
+                'region' => 'Bandung',
+            ]);
 
-        return redirect()->route('admin.locations.index')->with('success', 'Lokasi parkir berhasil ditambahkan!');
+            return redirect()->route('admin.locations.index')
+                ->with('success', 'Lokasi berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            // Jika error, kembalikan ke form dengan pesan
+            return back()->withInput()->with('error', 'Gagal menyimpan: ' . $e->getMessage());
+        }
     }
 
     public function destroy(ParkingLocation $location)
     {
         $location->delete();
-        return redirect()->route('admin.locations.index')->with('success', 'Lokasi berhasil dihapus.');
+        return redirect()->route('admin.locations.index')->with('success', 'Lokasi dihapus.');
     }
 }
