@@ -9,6 +9,7 @@ use App\Http\Controllers\User\DashboardController as UserDashboard;
 use App\Http\Controllers\Petugas\DashboardController as PetugasDashboard;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\LocationController;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -84,5 +85,5 @@ Route::middleware(['auth'])->group(function () {
 
     // Ganti Password
     Route::get('/profile/password', [UserDashboard::class, 'editPassword'])->name('profile.password');
-    Route::put('/profile/password/update', [UserDashboard::class, 'updatePassword'])->name('profile.password.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('user.profile.password.update');
 });

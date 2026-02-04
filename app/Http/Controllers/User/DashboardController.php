@@ -19,16 +19,23 @@ class DashboardController extends Controller
     {
         $lat = $request->query('lat');
         $lng = $request->query('lng');
-        $category = $request->query('category'); // Ambil parameter kategori
+        $category = $request->query('category');
+        $search = $request->query('search'); // 1. Tambahkan penangkap input search
         $isSorted = false;
 
-        // 1. Mulai Query Dasar (Hanya lokasi yang BUKA)
         $query = ParkingLocation::where('status', 'open');
 
-        // 2. Logika Filter Kategori
+        // 2. Tambahkan Logika Pencarian Nama/Alamat
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                    ->orWhere('address', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // 3. Logika Filter Kategori (Sudah benar, tinggal rapikan sedikit)
         if ($category && $category !== 'semua') {
             if ($category === 'bandung_tengah') {
-                // Filter khusus Bandung Tengah (Berdasarkan alamat atau kategori)
                 $query->where(function ($q) {
                     $q->where('address', 'LIKE', '%Alun-Alun%')
                         ->orWhere('address', 'LIKE', '%Asia Afrika%')
@@ -36,25 +43,21 @@ class DashboardController extends Controller
                         ->orWhere('category', 'bandung_tengah');
                 });
             } else {
-                // Filter umum (Mall, Pasar, dll)
                 $query->where('category', $category);
             }
         }
 
-        // 3. Logika Sorting (Terdekat vs Terbaru)
+        // 4. Logika Sorting
         if ($lat && $lng && method_exists(ParkingLocation::class, 'scopeNearby')) {
-            // Jika ada koordinat, urutkan berdasarkan jarak
             $query->nearby($lat, $lng);
             $isSorted = true;
         } else {
-            // Default: urutkan terbaru
             $query->latest();
         }
 
         $locations = $query->get();
         $user = Auth::user();
 
-        // Kirim variabel $category ke view untuk styling tombol aktif
         return view('user.dashboard', compact('locations', 'isSorted', 'user', 'category'));
     }
 

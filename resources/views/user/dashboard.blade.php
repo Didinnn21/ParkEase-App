@@ -41,39 +41,65 @@
                 </div>
             </div>
 
+            {{-- FOTO PROFIL DI NAVBAR ATAS --}}
             <div class="flex gap-3">
-                <div
-                    class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center text-blue-600 font-bold text-xs border border-blue-100">
-                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                </div>
+                <a href="{{ route('user.profile') }}"
+                    class="w-10 h-10 rounded-full overflow-hidden border border-blue-100 shadow-sm flex items-center justify-center bg-blue-50">
+                    @if(Auth::user()->profile_photo)
+                        <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}" alt="Profile"
+                            class="w-full h-full object-cover">
+                    @else
+                        <span class="text-blue-600 font-bold text-xs">
+                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                        </span>
+                    @endif
+                </a>
             </div>
         </div>
 
-        <div class="relative mb-6">
-            <input type="text" placeholder="cari lokasi parkir di bandung..."
-                class="w-full bg-[#E9ECEF] border-none rounded-2xl py-4 pl-12 pr-4 text-sm font-semibold text-slate-500 outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+        {{-- FORM PENCARIAN --}}
+        <form action="{{ route('user.dashboard') }}" method="GET" class="relative mb-6">
+            @if(request('category'))
+                <input type="hidden" name="category" value="{{ request('category') }}">
+            @endif
+
+            <input type="text" name="search" value="{{ request('search') }}"
+                placeholder="cari lokasi parkir di bandung..."
+                class="w-full bg-[#E9ECEF] border-none rounded-2xl py-4 pl-12 pr-4 text-sm font-semibold text-[#1A1A1A] outline-none focus:ring-2 focus:ring-blue-500 transition-all">
             <svg class="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none"
                 stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
-        </div>
+        </form>
 
+        {{-- FILTER KATEGORI --}}
         <div class="flex gap-2 overflow-x-auto hide-scrollbar pb-2">
-            <button
-                class="bg-[#2D7CF6] text-white px-5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap">Terdekat</button>
-            <button
-                class="bg-[#E9ECEF] text-slate-500 px-5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap">Bandung
-                Tengah</button>
-            <button
-                class="bg-[#E9ECEF] text-slate-500 px-5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap">Mall</button>
-            <button
-                class="bg-[#E9ECEF] text-slate-500 px-5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap">Pasar</button>
+            @php
+                $menus = [
+                    ['label' => 'Terdekat', 'slug' => 'semua'],
+                    ['label' => 'Bandung Tengah', 'slug' => 'bandung_tengah'],
+                    ['label' => 'Mall', 'slug' => 'mall'],
+                    ['label' => 'Pasar', 'slug' => 'pasar'],
+                ];
+            @endphp
+
+            @foreach($menus as $menu)
+                    <a href="{{ route('user.dashboard', ['category' => $menu['slug'], 'search' => request('search')]) }}" class="px-5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all
+                           {{ (request('category') == $menu['slug'] || (!request('category') && $menu['slug'] == 'semua'))
+                ? 'bg-[#2D7CF6] text-white shadow-lg shadow-blue-100'
+                : 'bg-[#E9ECEF] text-slate-500 hover:bg-slate-200' }}">
+                        {{ $menu['label'] }}
+                    </a>
+            @endforeach
         </div>
     </div>
 
     <div class="px-6 mt-6">
-        <h2 class="text-sm font-extrabold text-[#1A1A1A] mb-4">Lokasi Parkir Bandung Terdekat</h2>
+        <h2 class="text-sm font-extrabold text-[#1A1A1A] mb-4">
+            {{ request('search') ? 'Hasil Pencarian: "' . request('search') . '"' : 'Lokasi Parkir Bandung Terdekat' }}
+        </h2>
+
         <div class="space-y-4">
             @forelse($locations as $loc)
                 <div
@@ -119,30 +145,35 @@
         </div>
     </div>
 
+    {{-- BOTTOM NAVIGATION --}}
     <div
         class="fixed bottom-0 w-full bg-white border-t border-slate-100 px-6 py-4 flex justify-between items-center shadow-[0_-10px_20px_rgba(0,0,0,0.02)] z-50">
         <a href="{{ route('user.dashboard') }}" class="flex flex-col items-center gap-1.5 group">
             <div
-                class="w-12 h-10 bg-[#2D7CF6] text-white shadow-lg shadow-blue-100 rounded-xl flex items-center justify-center transition-all duration-300">
+                class="w-12 h-10 {{ request()->routeIs('user.dashboard') ? 'bg-[#2D7CF6] text-white shadow-lg shadow-blue-100' : 'bg-[#E9ECEF] text-slate-400' }} rounded-xl flex items-center justify-center transition-all duration-300">
                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
                 </svg>
             </div>
-            <span class="text-[10px] font-extrabold text-[#2D7CF6] uppercase tracking-tighter">Home</span>
+            <span
+                class="text-[10px] font-extrabold {{ request()->routeIs('user.dashboard') ? 'text-[#2D7CF6]' : 'text-slate-400' }} uppercase tracking-tighter">Home</span>
         </a>
+
         <a href="{{ route('user.history') }}" class="flex flex-col items-center gap-1.5 group">
             <div
-                class="w-12 h-10 bg-[#E9ECEF] text-slate-400 group-hover:bg-blue-50 rounded-xl flex items-center justify-center transition-all duration-300">
+                class="w-12 h-10 {{ request()->routeIs('user.history') ? 'bg-[#2D7CF6] text-white shadow-lg shadow-blue-100' : 'bg-[#E9ECEF] text-slate-400' }} rounded-xl flex items-center justify-center transition-all duration-300">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
             </div>
-            <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-tighter">Riwayat</span>
+            <span
+                class="text-[10px] font-extrabold {{ request()->routeIs('user.history') ? 'text-[#2D7CF6]' : 'text-slate-400' }} uppercase tracking-tighter">Riwayat</span>
         </a>
+
         <a href="{{ route('user.notifications') }}" class="flex flex-col items-center gap-1.5 group">
             <div
-                class="w-12 h-10 {{ request()->routeIs('user.notifications') ? 'bg-[#2D7CF6] text-white shadow-lg shadow-blue-100' : 'bg-[#E9ECEF] text-slate-400 group-hover:bg-blue-50' }} rounded-xl flex items-center justify-center transition-all duration-300">
+                class="w-12 h-10 {{ request()->routeIs('user.notifications') ? 'bg-[#2D7CF6] text-white shadow-lg shadow-blue-100' : 'bg-[#E9ECEF] text-slate-400' }} rounded-xl flex items-center justify-center transition-all duration-300">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                         d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
@@ -154,15 +185,23 @@
                 Notifikasi
             </span>
         </a>
+
+        {{-- MENU PROFIL DI BOTTOM NAV --}}
         <a href="{{ route('user.profile') }}" class="flex flex-col items-center gap-1.5 group">
             <div
-                class="w-12 h-10 bg-[#E9ECEF] text-slate-400 group-hover:bg-blue-50 rounded-xl flex items-center justify-center transition-all duration-300">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                </svg>
+                class="w-12 h-10 {{ request()->routeIs('user.profile') ? 'bg-[#2D7CF6] text-white' : 'bg-[#E9ECEF] text-slate-400' }} rounded-xl flex items-center justify-center transition-all duration-300 overflow-hidden">
+                @if(Auth::user()->profile_photo)
+                    <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}" alt="Profile"
+                        class="w-full h-full object-cover">
+                @else
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                @endif
             </div>
-            <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-tighter">Profil</span>
+            <span
+                class="text-[10px] font-extrabold {{ request()->routeIs('user.profile') ? 'text-[#2D7CF6]' : 'text-slate-400' }} uppercase tracking-tighter">Profil</span>
         </a>
 
         <form action="{{ route('logout') }}" method="POST" class="flex flex-col items-center gap-1.5 group">
