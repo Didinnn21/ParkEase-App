@@ -13,19 +13,19 @@ use Illuminate\Support\Facades\Hash;
 class DashboardController extends Controller
 {
     /**
-     * Dashboard: Menampilkan daftar lokasi parkir dengan Filter Kategori.
+     * Dashboard: Menampilkan daftar lokasi parkir dengan Filter Kategori & Pencarian.
      */
     public function index(Request $request)
     {
         $lat = $request->query('lat');
         $lng = $request->query('lng');
         $category = $request->query('category');
-        $search = $request->query('search'); // 1. Tambahkan penangkap input search
+        $search = $request->query('search');
         $isSorted = false;
 
         $query = ParkingLocation::where('status', 'open');
 
-        // 2. Tambahkan Logika Pencarian Nama/Alamat
+        // Logika Pencarian Nama/Alamat
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'LIKE', "%{$search}%")
@@ -33,7 +33,7 @@ class DashboardController extends Controller
             });
         }
 
-        // 3. Logika Filter Kategori (Sudah benar, tinggal rapikan sedikit)
+        // Logika Filter Kategori
         if ($category && $category !== 'semua') {
             if ($category === 'bandung_tengah') {
                 $query->where(function ($q) {
@@ -47,7 +47,7 @@ class DashboardController extends Controller
             }
         }
 
-        // 4. Logika Sorting
+        // Logika Sorting Jarak atau Terbaru
         if ($lat && $lng && method_exists(ParkingLocation::class, 'scopeNearby')) {
             $query->nearby($lat, $lng);
             $isSorted = true;
@@ -62,6 +62,29 @@ class DashboardController extends Controller
     }
 
     /**
+     * FUNGSI BARU: Menyimpan riwayat navigasi ketika user klik lokasi.
+     */
+    public function storeHistory(Request $request)
+    {
+        $request->validate([
+            'parking_location_id' => 'required|exists:parking_locations,id',
+        ]);
+
+        try {
+            ParkingHistory::create([
+                'user_id' => Auth::id(),
+                'parking_location_id' => $request->parking_location_id,
+                'start_time' => now(),
+                'status' => 'Mencari Parkir', // Status awal saat navigasi dimulai
+            ]);
+
+            return response()->json(['status' => 'success']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
      * Menampilkan riwayat log parkir user.
      */
     public function history()
@@ -72,6 +95,15 @@ class DashboardController extends Controller
             ->get();
 
         return view('user.history', compact('histories'));
+    }
+
+    /**
+     * Halaman Profil Utama
+     */
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('user.profile', compact('user'));
     }
 
     /**
@@ -142,11 +174,6 @@ class DashboardController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect()->route('user.profile')->with('success', 'Password berhasil diubah. Silakan login ulang jika diperlukan.');
-    }
-    public function profile()
-    {
-        $user = Auth::user();
-        return view('user.profile', compact('user')); // Pastikan nama file view sesuai
+        return redirect()->route('user.profile')->with('success', 'Password berhasil diubah.');
     }
 }

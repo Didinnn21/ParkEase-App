@@ -38,10 +38,9 @@ Route::post('/logout', function () {
 
 
 // --- GROUP ADMIN (Wajib Login) ---
-    Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
     Route::get('/history', [App\Http\Controllers\Admin\HistoryController::class, 'index'])->name('history.index');
-
 
     // Kelola Lokasi
     Route::resource('locations', LocationController::class);
@@ -64,11 +63,14 @@ Route::middleware(['auth'])->prefix('petugas')->name('petugas.')->group(function
 Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
     Route::get('/dashboard', [UserDashboard::class, 'index'])->name('dashboard');
     Route::get('/history', [UserDashboard::class, 'history'])->name('history');
+
+    // RUTE BARU: Untuk menyimpan riwayat navigasi
+    Route::post('/history/store', [UserDashboard::class, 'storeHistory'])->name('history.store');
+
     Route::get('/notifications', function () {
         return view('user.notifications');
     })->name('notifications');
 
-    // Halaman Profil Utama (Overview) - Masih pakai nama 'user.profile' agar controller tidak error
     Route::get('/profile', function () {
         return view('user.profile');
     })->name('profile');
@@ -76,9 +78,7 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
 
 
 // --- GLOBAL PROFILE ROUTES (Bisa diakses Admin, Petugas, User) ---
-// Rute ini diletakkan di luar grup prefix agar namanya menjadi 'profile.edit' (bukan 'user.profile.edit')
 Route::middleware(['auth'])->group(function () {
-
     // Edit Profil
     Route::get('/profile/edit', [UserDashboard::class, 'editProfile'])->name('profile.edit');
     Route::put('/profile/update', [UserDashboard::class, 'updateProfile'])->name('profile.update');
