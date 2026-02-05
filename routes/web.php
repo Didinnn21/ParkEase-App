@@ -77,13 +77,13 @@ Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
 });
 
 
-// --- GLOBAL PROFILE ROUTES (Bisa diakses Admin, Petugas, User) ---
+// --- GLOBAL PROFILE ROUTES ---
 Route::middleware(['auth'])->group(function () {
-    // Edit Profil
-    Route::get('/profile/edit', [UserDashboard::class, 'editProfile'])->name('profile.edit');
-    Route::put('/profile/update', [UserDashboard::class, 'updateProfile'])->name('profile.update');
+    // Gunakan ProfileController, BUKAN UserDashboard
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 
     // Ganti Password
-    Route::get('/profile/password', [UserDashboard::class, 'editPassword'])->name('profile.password');
+    Route::get('/profile/password', [ProfileController::class, 'changePassword'])->name('profile.password');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('user.profile.password.update');
 });

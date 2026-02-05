@@ -32,37 +32,52 @@ class ProfileController extends Controller
      * Memproses update data profil dan foto.
      */
     public function update(Request $request)
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+    $request->validate([
+        'name' => 'required|string|max:255',
+        // Validasi input file
+        'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+    ]);
 
-        $data = [
-            'name' => $request->name,
-            'email' => $request->email,
-        ];
+    $data = [
+        'name' => $request->name,
+    ];
 
-        // Logika Upload Foto Profil
-        if ($request->hasFile('profile_photo')) {
-            // Hapus foto lama jika ada
-            if ($user->profile_photo) {
-                Storage::disk('public')->delete($user->profile_photo);
-            }
+    // Cek apakah ada file foto yang diupload
+    if ($request->hasFile('photo')) {
 
-            // Simpan foto baru
-            $path = $request->file('profile_photo')->store('profile_photos', 'public');
-            $data['profile_photo'] = $path;
+        // 1. Hapus foto lama jika ada
+        if ($user->profile_photo_path && Storage::disk('public')->exists($user->profile_photo_path)) {
+            Storage::disk('public')->delete($user->profile_photo_path);
         }
 
-        $user->update($data);
+        // 2. Simpan foto baru ke folder 'profile-photos'
+        $path = $request->file('photo')->store('profile-photos', 'public');
 
-        return redirect()->route('user.profile')->with('success', 'Profil berhasil diperbarui!');
+        // 3. Simpan PATH-nya ke kolom database yang BENAR
+        $data['profile_photo_path'] = $path;
     }
 
+    $user->update($data);
+
+
+
+    // --- PERBAIKAN LOGIKA REDIRECT ---
+    // Opsi A: Tetap di halaman edit (Paling User Friendly)
+    // return back()->with('success', 'Profil berhasil diperbarui!');
+
+    // Opsi B: Redirect sesuai Role (Sesuai permintaan Anda)
+    if ($user->role === 'admin') {
+        return redirect()->route('admin.dashboard')->with('success', 'Profil Admin berhasil diperbarui!');
+    } elseif ($user->role === 'petugas') {
+        return redirect()->route('petugas.dashboard')->with('success', 'Profil Petugas berhasil diperbarui!');
+    } else {
+        // Default untuk User biasa
+        return redirect()->route('user.profile')->with('success', 'Profil berhasil diperbarui!');
+    }
+}
     /**
      * Menampilkan halaman ganti password.
      */
