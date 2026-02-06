@@ -28,7 +28,7 @@
     </div>
 
     <div class="px-6 mt-10">
-        <form action="{{ route('user.profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
             @method('PUT')
 
@@ -36,11 +36,11 @@
                 <div class="relative">
                     <div
                         class="w-28 h-28 bg-slate-100 rounded-full flex items-center justify-center border-4 border-white shadow-sm overflow-hidden">
-                        @if(Auth::user()->avatar)
-                            <img id="avatarPreview" src="{{ asset('storage/avatars/' . Auth::user()->avatar) }}"
+                        @if(Auth::user()->profile_photo_path)
+                            <img id="avatarPreview" src="{{ Auth::user()->photo_url }}"
                                 class="w-full h-full object-cover">
                         @else
-                            <span id="avatarPlaceholder" class="text-slate-300 text-3xl font-bold">??</span>
+                            <span id="avatarPlaceholder" class="text-slate-300 text-3xl font-bold">{{ substr(Auth::user()->name, 0, 1) }}</span>
                             <img id="avatarPreview" src="#" class="hidden w-full h-full object-cover">
                         @endif
                     </div>
@@ -52,12 +52,12 @@
                     </button>
                 </div>
 
-                <input type="file" name="avatar" id="avatarInput" class="hidden" accept="image/*"
+                <input type="file" name="photo" id="avatarInput" class="hidden" accept="image/*"
                     onchange="previewImage(this)">
 
                 <button type="button" onclick="document.getElementById('avatarInput').click()"
                     class="mt-4 text-sm font-bold text-[#2D7CF6]">Ubah Foto Profile</button>
-                @error('avatar') <p class="text-red-500 text-[10px] mt-1 font-bold">{{ $message }}</p> @enderror
+                @error('photo') <p class="text-red-500 text-[10px] mt-1 font-bold">{{ $message }}</p> @enderror
             </div>
 
             <div class="space-y-2">

@@ -18,8 +18,15 @@
 
     <div class="flex flex-col items-center mb-10">
         <div class="relative">
-            <div class="w-28 h-28 bg-slate-200 rounded-full flex items-center justify-center text-slate-400 text-3xl font-bold border-4 border-white shadow-sm overflow-hidden">
-                <span class="text-4xl">??</span>
+            <div
+                class="w-28 h-28 bg-slate-200 rounded-full flex items-center justify-center border-4 border-white shadow-sm overflow-hidden">
+                @if(Auth::user()->avatar)
+                    <img src="{{ asset('storage/avatars/' . Auth::user()->avatar) }}" alt="Profile" class="w-full h-full object-cover">
+                @else
+                    <span class="text-4xl text-slate-400 font-bold">
+                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                    </span>
+                @endif
             </div>
             <button class="absolute bottom-1 right-1 w-8 h-8 bg-[#2D7CF6] rounded-full border-2 border-white flex items-center justify-center text-white shadow-sm">
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
@@ -30,7 +37,7 @@
     </div>
 
     <div class="px-6 space-y-3">
-        <a href="{{ route('user.profile.edit') }}" class="flex items-center justify-between bg-white p-5 rounded-3xl border border-slate-50 shadow-sm active:scale-[0.98] transition-all">
+        <a href="{{ route('profile.edit') }}" class="flex items-center justify-between bg-white p-5 rounded-3xl border border-slate-50 shadow-sm active:scale-[0.98] transition-all">
             <div class="flex items-center gap-4">
                 <div class="w-10 h-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
@@ -40,7 +47,7 @@
             <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
         </a>
 
-        <a href="{{ route('user.profile.password') }}" class="flex items-center justify-between bg-white p-5 rounded-3xl border border-slate-50 shadow-sm active:scale-[0.98] transition-all">
+        <a href="{{ route('profile.password') }}" class="flex items-center justify-between bg-white p-5 rounded-3xl border border-slate-50 shadow-sm active:scale-[0.98] transition-all">
             <div class="flex items-center gap-4">
                 <div class="w-10 h-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 00-2 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>

@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Petugas;
 
 use App\Http\Controllers\Controller;
-use App\Models\ParkingLocation;
 use Illuminate\Http\Request;
+use App\Models\ParkingHistory; // Pastikan Model ini sudah dibuat
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -37,18 +38,55 @@ class DashboardController extends Controller
 
     public function updateSlot(Request $request)
     {
-        $location = ParkingLocation::findOrFail($request->location_id);
+        $request->validate([
+            'action' => 'required|in:increment,decrement',
+        ]);
 
+        $user = Auth::user();
+        $location = $user->location;
+
+        if (!$location) {
+            return back()->with('error', 'Error: Lokasi tidak ditemukan.');
+        }
+
+        // Simpan snapshot sebelum perubahan untuk history
+        $previousSlots = $location->available_slots;
+
+        // Logik Update (Sesuai SKPL 9.5)
         if ($request->action === 'increment') {
+            // Menambah slot (Kendaraan KELUAR)
             if ($location->available_slots < $location->total_slots) {
                 $location->increment('available_slots');
+            } else {
+                return back()->with('error', 'Slot sudah maksimal! Tidak mungkin lebih dari kapasitas total.');
             }
         } elseif ($request->action === 'decrement') {
+            // Mengurangi slot (Kendaraan MASUK)
             if ($location->available_slots > 0) {
                 $location->decrement('available_slots');
+            } else {
+                return back()->with('error', 'Parkir sudah penuh! Tidak bisa mengurangi slot.');
             }
         }
 
-        return back()->with('status', 'Slot berhasil diperbarui!');
+        // Update Status Otomatis (Open/Full)
+        if ($location->available_slots == 0) {
+            $location->update(['status' => 'full']);
+        } else {
+            $location->update(['status' => 'open']);
+        }
+
+        // REKAM JEJAK (Audit Trail - Sesuai SKPL 13.160)
+        // Kita simpan siapa yang ubah, bila, dan dari angka berapa ke berapa
+        ParkingHistory::create([
+            'parking_location_id' => $location->id,
+            'user_id' => $user->id,
+            'previous_available' => $previousSlots,
+            'new_available' => $location->available_slots, // Ambil nilai terbaru
+            'action' => $request->action,
+            'notes' => 'Update manual via Dashboard Petugas'
+        ]);
+
+        return back()->with('success', 'Slot berhasil diperbarui.');
     }
 }

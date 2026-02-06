@@ -9,18 +9,31 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CheckRole
 {
-    public function handle(Request $request, Closure $next, string $role): Response
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @param  string  ...$roles  // Menggunakan spread operator agar bisa menerima banyak role
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        // Jika belum login, lempar ke halaman login
+        // 1. Cek apakah pengguna sudah login
         if (!Auth::check()) {
             return redirect()->route('login');
         }
 
-        // Jika login tapi role tidak sesuai, lempar ke dashboard masing-masing atau error 403
-        if ($request->user()->role !== $role) {
-            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+        // 2. Ambil role user yang sedang login
+        $userRole = Auth::user()->role;
+
+        // 3. Cek apakah role user ada di dalam daftar $roles yang diizinkan
+        // in_array memastikan user memiliki salah satu dari role yang dipersyaratkan
+        if (in_array($userRole, $roles)) {
+            return $next($request);
         }
 
-        return $next($request);
+        // 4. Jika tidak memiliki akses, tampilkan error 403
+        abort(403, 'Akses Ditolak: Anda tidak memiliki wewenang untuk mengakses halaman ini.');
     }
 }

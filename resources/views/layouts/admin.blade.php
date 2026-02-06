@@ -46,9 +46,9 @@
             <div class="p-8 h-full flex flex-col">
 
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 mb-10 group cursor-pointer">
-                    <div class="w-10 h-10 bg-brand rounded-xl flex items-center justify-center text-white shadow-lg shadow-brand/30 group-hover:scale-105 transition-transform">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-                    </div>
+                    <img src="{{ asset('assets/img/Logo_ParkEasy.jpeg') }}"
+     alt="ParkEase Logo"
+     class="w-10 h-10 rounded-xl object-cover shadow-lg shadow-brand/30 group-hover:scale-105 transition-transform">
                     <div>
                         <h1 class="font-extrabold text-xl text-dark leading-none tracking-tight group-hover:text-brand transition-colors">ParkEase</h1>
                         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Admin Portal</p>
@@ -103,9 +103,9 @@
 
             <div class="lg:hidden mb-8 flex justify-between items-center bg-white p-5 rounded-[2rem] shadow-sm border border-slate-100 sticky top-4 z-20">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-brand rounded-lg flex items-center justify-center text-white">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-                    </div>
+                   <img src="{{ asset('assets/img/Logo_ParkEasy.jpeg') }}"
+     alt="ParkEase Logo"
+     class="w-8 h-8 rounded-lg object-cover">
                     <span class="font-extrabold text-lg text-dark">ParkEase</span>
                 </div>
                 <button onclick="toggleSidebar()" class="p-2 bg-slate-50 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-brand transition-colors">

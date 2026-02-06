@@ -6,7 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
+use Illuminate\Support\Facades\Storage;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -23,6 +23,8 @@ class User extends Authenticatable
         'password',
         'role',
         'parking_location_id',
+        'avatar', // <--- WAJIB DITAMBAHKAN (Agar foto profil bisa disimpan)
+        'profile_photo_path',
     ];
 
     /**
@@ -48,19 +50,20 @@ class User extends Authenticatable
         ];
     }
 
-   /**
-     * Aksesor untuk URL Foto Profil
-     * Cara panggil: $user->photo_url
+    /**
+     * Aksesor untuk URL Foto Profil (Otomatis)
+     * Cara panggil di Blade: {{ Auth::user()->photo_url }}
      */
     public function getPhotoUrlAttribute()
-    {
-        if ($this->profile_photo_path) {
-            return asset('storage/' . $this->profile_photo_path);
-        }
-
-        // Jika tidak ada foto, pakai API UI Avatars (Inisial Nama)
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
+{
+    // Jika ada foto di database DAN file aslinya ada di storage
+    if ($this->profile_photo_path && Storage::disk('public')->exists($this->profile_photo_path)) {
+        return asset('storage/' . $this->profile_photo_path);
     }
+
+    // Fallback ke avatar inisial jika tidak ada foto
+    return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
+}
 
     /**
      * Relasi: Seorang petugas boleh mempunyai banyak sejarah update slot.
@@ -69,6 +72,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(ParkingHistory::class);
     }
+
+    /**
+     * Relasi: Petugas ditugaskan di satu lokasi parkir.
+     */
     public function location()
     {
         return $this->belongsTo(ParkingLocation::class, 'parking_location_id');
