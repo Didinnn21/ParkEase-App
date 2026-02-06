@@ -22,18 +22,23 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
+
+            // Ambil role user yang sedang login
             $role = Auth::user()->role;
 
+            // Redirect menggunakan Route Name (Lebih aman daripada ketik manual URL)
             if ($role === 'admin') {
-                return redirect()->intended('admin/dashboard');
+                return redirect()->route('admin.dashboard');
             } elseif ($role === 'petugas') {
-                return redirect()->intended('petugas/dashboard');
+                return redirect()->route('petugas.dashboard');
             } else {
-                // User Biasa -> Masuk ke Dashboard User yang ada GPS-nya
-                return redirect()->intended('user/dashboard');
+                // User Biasa
+                return redirect()->route('user.dashboard');
             }
         }
 
-        return back()->withErrors(['email' => 'Email atau Password salah.'])->onlyInput('email');
+        return back()->withErrors([
+            'email' => 'Email atau Password salah.',
+        ])->onlyInput('email');
     }
 }

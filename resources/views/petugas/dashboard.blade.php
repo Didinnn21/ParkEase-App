@@ -11,6 +11,7 @@
 <body class="bg-slate-900 min-h-screen text-white flex flex-col">
 
     <nav class="p-6 flex justify-between items-center border-b border-slate-800">
+<<<<<<< HEAD
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-blue-500/20">
                 <img src="{{ asset('assets/img/Logo_ParkEasy.jpeg') }}" alt="Logo ParkEase"
@@ -21,6 +22,18 @@
                 <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Mode Petugas</p>
             </div>
         </div>
+=======
+        <a href="{{ route('petugas.dashboard') }}" class="flex items-center gap-3">
+            <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 group">
+    <img src="{{ Auth::user()->photo_url }}" class="w-10 h-10 rounded-xl object-cover border-2 border-slate-700 group-hover:border-blue-500 transition-colors">
+
+    <div class="text-left">
+        <h1 class="font-bold text-lg leading-none group-hover:text-blue-400 transition-colors">{{ Auth::user()->name }}</h1>
+        <p class="text-xs text-slate-400">Edit Profil ></p>
+    </div>
+</a>
+        </a>
+>>>>>>> 1562099bb012a5bdb015e6a32a7d68e3cc5b0af1
         <form action="{{ route('logout') }}" method="POST">
             @csrf
             <button

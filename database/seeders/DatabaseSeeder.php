@@ -15,20 +15,36 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Akun Admin
-        User::factory()->create([
-            'name' => 'Admin ParkEase',
-            'email' => 'admin@parkease.com',
-            'password' => bcrypt('admin123'),
-            'role' => 'admin',
-        ]);
+        // 1. Akun Admin
+        // firstOrCreate: Cek apakah email 'admin@parkease.com' ada.
+        // Jika belum ada, maka buat user dengan data di array kedua.
+        User::firstOrCreate(
+            ['email' => 'admin@parkease.com'],
+            [
+                'name' => 'Admin ParkEase',
+                'password' => bcrypt('admin1234'),
+                'role' => 'admin',
+            ]
+        );
 
-        // Akun User (Pengguna Umum)
-        User::factory()->create([
-            'name' => 'User Biasa',
-            'email' => 'user@email.com',
-            'password' => bcrypt('password123'),
-            'role' => 'user',
-        ]);
+        // 2. Akun User (Pengguna Umum)
+        User::firstOrCreate(
+            ['email' => 'user@email.com'],
+            [
+                'name' => 'User Biasa',
+                'password' => bcrypt('password123'),
+                'role' => 'user',
+            ]
+        );
+
+        // 3. Akun Petugas (Tambahan agar Anda bisa tes login Petugas)
+        User::firstOrCreate(
+            ['email' => 'petugas@email.com'],
+            [
+                'name' => 'Petugas Lapangan',
+                'password' => bcrypt('password'),
+                'role' => 'petugas',
+            ]
+        );
     }
 }
